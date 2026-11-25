@@ -389,7 +389,6 @@ Panel {
             width: parent.width
             settingKey: "fadeMs"
             label: strings.t("panel.fade")
-            readout: root.fadeReadout(root.config.fadeMs)
           }
 
           PanelSeparator { foreground: root.foreground }
@@ -487,7 +486,6 @@ Panel {
     property string settingKey: ""
     property string label: ""
     property string suffix: ""
-    property string readout: ""
     property bool showUseCurrent: false
     property bool live: false
 
@@ -533,7 +531,12 @@ Panel {
       Text {
         id: valueText
         textFormat: Text.PlainText
-        text: rowRoot.readout !== "" ? rowRoot.readout : rowRoot.currentValue + rowRoot.suffix
+        text: {
+          var language = strings.language
+          var value = slider.dragging ? slider.liveValue : rowRoot.currentValue
+          if (rowRoot.settingKey === "fadeMs") return root.fadeReadout(value)
+          return Math.round(value) + rowRoot.suffix
+        }
         color: root.foreground
         font.family: root.fontFamily
         font.pixelSize: Style.font.bodySmall
@@ -543,6 +546,7 @@ Panel {
     }
 
     PanelSlider {
+      id: slider
       width: parent.width
       bar: root.bar
       value: rowRoot.currentValue
