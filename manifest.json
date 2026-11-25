@@ -25,6 +25,7 @@
       "luxDark": 8,
       "luxBright": 180,
       "idleSeconds": 5,
+      "fadeMs": 1500,
       "pollIntervalMs": 1000,
       "smoothing": 0.4
     },
@@ -88,6 +89,15 @@
         "max": 3600,
         "step": 5,
         "defaultValue": 5
+      },
+      {
+        "key": "fadeMs",
+        "type": "integer",
+        "label": "Full fade (milliseconds)",
+        "min": 200,
+        "max": 4000,
+        "step": 100,
+        "defaultValue": 1500
       },
       {
         "key": "pollIntervalMs",

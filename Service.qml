@@ -41,6 +41,7 @@ Item {
   property int externalPercent: 0
   property bool loggedReady: false
   property bool warned: false
+  property int appliedFadeMs: 1500
   property real fadeFrom: 0
   property real fadeTo: 0
   property double fadeStartMs: 0
@@ -161,7 +162,7 @@ Item {
     fadeFrom = shownPercent
     fadeTo = next
     fadeStartMs = Date.now()
-    fadeDurationMs = Model.fadeDuration(shownPercent, next)
+    fadeDurationMs = Model.fadeDuration(shownPercent, next, config.fadeMs)
     if (!fadeTimer.running) fadeTimer.start()
   }
 
@@ -234,6 +235,12 @@ Item {
     if (root.config.idleSeconds <= 0) root.userIdle = false
     if (root.hold && Model.holdReleased(root.smoothedLux, root.holdLux, Model.OVERRIDE_LUX))
       root.hold = false
+    var fadeChanged = root.appliedFadeMs !== root.config.fadeMs
+    root.appliedFadeMs = root.config.fadeMs
+    if (fadeChanged && root.fadeTimer.running) {
+      root.beginFade(root.fadeTo)
+      return
+    }
     root.retarget()
   }
 

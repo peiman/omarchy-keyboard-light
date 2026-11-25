@@ -45,6 +45,7 @@ Panel {
     var list = []
     if (hasSensor) list.push("auto")
     list.push("idle")
+    list.push("fadeMs")
     if (autoOn) {
       list.push("maxPercent")
       list.push("minPercent")
@@ -83,7 +84,12 @@ Panel {
       return { minimum: 0, maximum: 100, step: 5 }
     if (key === "luxDark") return { minimum: 0, maximum: 500, step: 1 }
     if (key === "luxBright") return { minimum: 1, maximum: 2000, step: 10 }
+    if (key === "fadeMs") return { minimum: 200, maximum: 4000, step: 100 }
     return null
+  }
+
+  function fadeReadout(ms) {
+    return strings.t("panel.fadeSeconds").arg(Commons.I18n.formatNumber(Number(ms) / 1000, 1))
   }
 
   function persistSettings(values) {
@@ -372,6 +378,31 @@ Panel {
 
           PanelSeparator { foreground: root.foreground }
 
+          PanelSectionHeader {
+            text: strings.t("panel.fade")
+            foreground: root.hasCursorOn("fadeMs") ? root.foreground : root.dim
+            fontFamily: root.fontFamily
+          }
+
+          Text {
+            textFormat: Text.PlainText
+            width: parent.width
+            text: strings.t("panel.fadeHelp")
+            color: root.dim
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+
+          SettingSlider {
+            width: parent.width
+            settingKey: "fadeMs"
+            label: strings.t("panel.fade")
+            readout: root.fadeReadout(root.config.fadeMs)
+          }
+
+          PanelSeparator { foreground: root.foreground }
+
           Column {
             visible: !root.autoOn
             width: parent.width
@@ -466,6 +497,7 @@ Panel {
     property string settingKey: ""
     property string label: ""
     property string suffix: ""
+    property string readout: ""
     property bool showUseCurrent: false
     property bool live: false
 
@@ -511,7 +543,7 @@ Panel {
       Text {
         id: valueText
         textFormat: Text.PlainText
-        text: rowRoot.currentValue + rowRoot.suffix
+        text: rowRoot.readout !== "" ? rowRoot.readout : rowRoot.currentValue + rowRoot.suffix
         color: root.foreground
         font.family: root.fontFamily
         font.pixelSize: Style.font.bodySmall

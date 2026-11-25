@@ -35,6 +35,7 @@ function withDefaults(settings) {
     luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 100000),
     luxBright: clamp(source.luxBright === undefined ? 180 : source.luxBright, 0, 100000),
     idleSeconds: whole(source.idleSeconds === undefined ? 5 : source.idleSeconds, 0, 3600) || 0,
+    fadeMs: whole(source.fadeMs === undefined ? 1500 : source.fadeMs, 200, 4000) || 1500,
     pollIntervalMs: whole(source.pollIntervalMs === undefined ? 1000 : source.pollIntervalMs, 500, 10000) || 1000,
     smoothing: clamp(source.smoothing === undefined ? 0.4 : source.smoothing, 0, 0.95)
   }
@@ -116,10 +117,13 @@ function approach(shown, target, step) {
 var FULL_FADE_MS = 1500
 var MIN_FADE_MS = 400
 
-function fadeDuration(fromPercent, toPercent) {
+function fadeDuration(fromPercent, toPercent, fullMs) {
+  var full = whole(fullMs === undefined || fullMs === null ? FULL_FADE_MS : fullMs, 200, 4000)
+  if (full === null) full = FULL_FADE_MS
   var span = Math.abs(Number(toPercent) - Number(fromPercent)) / 100
-  if (!isFinite(span) || span <= 0) return MIN_FADE_MS
-  return Math.max(MIN_FADE_MS, Math.round(FULL_FADE_MS * Math.min(1, span)))
+  if (!isFinite(span) || span <= 0) return Math.min(full, MIN_FADE_MS)
+  var shortest = Math.min(full, MIN_FADE_MS)
+  return Math.max(shortest, Math.round(full * Math.min(1, span)))
 }
 
 function fadePercent(fromPercent, toPercent, elapsedMs, durationMs) {
