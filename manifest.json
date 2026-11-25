@@ -86,8 +86,8 @@
         "type": "integer",
         "label": "Turn off after idle (seconds, 0 keeps it on)",
         "min": 0,
-        "max": 3600,
-        "step": 5,
+        "max": 60,
+        "step": 1,
         "defaultValue": 5
       },
       {

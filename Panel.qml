@@ -43,7 +43,7 @@ Panel {
     var language = strings.language
     var list = []
     if (hasSensor) list.push("auto")
-    list.push("idle")
+    list.push("idleSeconds")
     list.push("fadeMs")
     if (autoOn) {
       list.push("maxPercent")
@@ -84,11 +84,18 @@ Panel {
     if (key === "luxDark") return { minimum: 0, maximum: 500, step: 1 }
     if (key === "luxBright") return { minimum: 1, maximum: 2000, step: 10 }
     if (key === "fadeMs") return { minimum: 200, maximum: 1000, step: 100 }
+    if (key === "idleSeconds") return { minimum: 0, maximum: 60, step: 1 }
     return null
   }
 
   function fadeReadout(ms) {
     return strings.t("panel.fadeSeconds").arg(Commons.I18n.formatNumber(Number(ms) / 1000, 1))
+  }
+
+  function idleReadout(seconds) {
+    var value = Math.round(Number(seconds))
+    if (!isFinite(value) || value <= 0) return strings.t("panel.idle0")
+    return strings.t("panel.idleSeconds").arg(Commons.I18n.formatNumber(value))
   }
 
   function persistSettings(values) {
@@ -120,10 +127,6 @@ Panel {
     }
   }
 
-  function setIdle(seconds) {
-    persistSettings({ idleSeconds: Model.nearestPreset(seconds) })
-  }
-
   function nudge(delta) {
     var base = config.auto && !held ? livePercent : (held && service ? service.holdPercent : config.manualPercent)
     var next = Model.clampPercent(base + delta)
@@ -139,10 +142,6 @@ Panel {
   function adjustCursorRow(delta) {
     if (!cursorActive) return
     var key = rows[cursorIndex]
-    if (key === "idle") {
-      setIdle(Model.stepPreset(config.idleSeconds, delta))
-      return
-    }
     var spec = sliderSpec(key)
     if (!spec) return
     commitSetting(key, Number(config[key]) + spec.step * delta)
@@ -319,7 +318,7 @@ Panel {
 
           PanelSectionHeader {
             text: strings.t("panel.idle")
-            foreground: root.hasCursorOn("idle") ? root.foreground : root.dim
+            foreground: root.hasCursorOn("idleSeconds") ? root.foreground : root.dim
             fontFamily: root.fontFamily
           }
 
@@ -333,37 +332,10 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          Flow {
+          SettingSlider {
             width: parent.width
-            spacing: Style.spacing.controlGap
-
-            Repeater {
-              model: [
-                { seconds: 0, key: "panel.idle0" },
-                { seconds: 1, key: "panel.idle1" },
-                { seconds: 3, key: "panel.idle3" },
-                { seconds: 5, key: "panel.idle5" },
-                { seconds: 10, key: "panel.idle10" },
-                { seconds: 30, key: "panel.idle30" },
-                { seconds: 60, key: "panel.idle60" }
-              ]
-              delegate: Button {
-                required property var modelData
-                readonly property bool chosen: root.config.idleSeconds === modelData.seconds
-                text: strings.t(modelData.key)
-                fontSize: Style.font.bodySmall
-                foreground: root.foreground
-                bordered: true
-                selected: chosen
-                hasCursor: root.hasCursorOn("idle") && chosen
-                onClicked: root.setIdle(modelData.seconds)
-                onHovered: function(on) {
-                  if (!on) return
-                  root.cursorActive = true
-                  root.cursorIndex = Math.max(0, root.rowIndex("idle"))
-                }
-              }
-            }
+            settingKey: "idleSeconds"
+            label: strings.t("panel.idle")
           }
 
           PanelSeparator { foreground: root.foreground }
@@ -534,6 +506,7 @@ Panel {
           var language = strings.language
           var value = slider.dragging ? slider.liveValue : rowRoot.currentValue
           if (rowRoot.settingKey === "fadeMs") return root.fadeReadout(value)
+          if (rowRoot.settingKey === "idleSeconds") return root.idleReadout(value)
           return Math.round(value) + rowRoot.suffix
         }
         color: root.foreground

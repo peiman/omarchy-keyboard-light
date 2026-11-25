@@ -34,7 +34,7 @@ function withDefaults(settings) {
     minPercent: clampPercent(source.minPercent === undefined ? 0 : source.minPercent),
     luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 100000),
     luxBright: clamp(source.luxBright === undefined ? 180 : source.luxBright, 0, 100000),
-    idleSeconds: whole(source.idleSeconds === undefined ? 5 : source.idleSeconds, 0, 3600) || 0,
+    idleSeconds: Math.min(60, whole(source.idleSeconds === undefined ? 5 : source.idleSeconds, 0, 3600) || 0),
     fadeMs: whole(source.fadeMs === undefined ? 1000 : source.fadeMs, 200, 1000) || 1000,
     pollIntervalMs: whole(source.pollIntervalMs === undefined ? 1000 : source.pollIntervalMs, 500, 10000) || 1000,
     smoothing: clamp(source.smoothing === undefined ? 0.4 : source.smoothing, 0, 0.95)
