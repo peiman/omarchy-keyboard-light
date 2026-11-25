@@ -41,11 +41,11 @@ Item {
   property int externalPercent: 0
   property bool loggedReady: false
   property bool warned: false
-  property int appliedFadeMs: 1000
+  property int appliedFadeMs: 276
   property real fadeFrom: 0
   property real fadeTo: 0
   property double fadeStartMs: 0
-  property int fadeDurationMs: 1000
+  property int fadeDurationMs: 276
   property bool fading: false
 
   readonly property bool available: ledName !== ""

@@ -35,11 +35,11 @@ check("crossed thresholds step past dark", model.mapLux(21, 20, 10, 0, 100) === 
 
 check("idle forces off", model.desiredPercent(dark, 1, true, false, 0, true) === 0)
 check("idle zero keeps the room", model.desiredPercent(
-  Object.assign({}, dark, { idleSeconds: 0 }), 1, true, false, 0, true) === 100)
+  Object.assign({}, dark, { idleSeconds: 0 }), 1, true, false, 0, true) === 5)
 check("manual ignores the room", model.ambientPercent(
   Object.assign({}, dark, { auto: false, manualPercent: 40 }), 1, true, false, 0) === 40)
 check("hold keeps the chosen level", model.ambientPercent(dark, 1, true, true, 25) === 25)
-check("no sensor uses the manual level", model.ambientPercent(dark, null, false, false, 0) === 40)
+check("no sensor uses the manual level", model.ambientPercent(dark, null, false, false, 0) === 4)
 
 check("smoothing takes the first sample", model.smooth(null, 12, 0.4) === 12)
 check("smoothing keeps some of the last sample", Math.abs(model.smooth(10, 0, 0.5) - 5) < 0.001)
@@ -52,13 +52,13 @@ check("hold stays inside twenty lux", model.holdReleased(20, 8, model.OVERRIDE_L
 
 check("approach finishes inside one step", model.approach(96, 100, 8) === 100)
 check("approach walks toward the target", model.approach(0, 100, 8) === 8)
-check("a full fade lasts one second", model.fadeDuration(0, 100) === 1000)
-check("a short fade still eases", model.fadeDuration(0, 10) === 400)
+check("a full fade uses the default time", model.fadeDuration(0, 100) === 276)
+check("a short fade still eases", model.fadeDuration(0, 10, 1000) === 400)
 check("turning off across the chosen range takes the full fade", model.fadeDuration(5, 0, 1000, 5) === 1000)
 check("a short slider time is not stretched", model.fadeDuration(5, 0, 276, 5) === 276)
 check("a fade longer than a second is capped", model.fadeDuration(0, 100, 3000) === 1000)
 check("a fast fade can be shorter than the usual minimum", model.fadeDuration(0, 100, 200) === 200)
-check("defaults include the fade", model.withDefaults({}).fadeMs === 1000)
+check("defaults include the fade", model.withDefaults({}).fadeMs === 276)
 check("fade starts at the current level", model.fadePercent(0, 100, 0, 1500) === 0)
 check("fade ends at the target", model.fadePercent(100, 0, 1500, 1500) === 0)
 check("fade is halfway at the midpoint", model.fadePercent(0, 100, 750, 1500) === 50)
@@ -110,7 +110,7 @@ const missing = model.parseProbe(probe({
 }))
 check("probe allows a machine with no keyboard light", missing.ok && missing.led === "")
 
-check("defaults match the mac curve", dark.luxDark === 8 && dark.luxBright === 180 && dark.idleSeconds === 5 && dark.auto === true)
+check("defaults match the saved curve", dark.luxDark === 8 && dark.luxBright === 180 && dark.idleSeconds === 2 && dark.maxPercent === 5 && dark.auto === true)
 check("zero idle is kept", model.withDefaults({ idleSeconds: 0 }).idleSeconds === 0)
 check("auto false is kept", model.withDefaults({ auto: false }).auto === false)
 

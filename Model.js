@@ -29,13 +29,13 @@ function withDefaults(settings) {
   var source = settings && typeof settings === "object" ? settings : {}
   return {
     auto: source.auto !== false,
-    manualPercent: clampPercent(source.manualPercent === undefined ? 40 : source.manualPercent),
-    maxPercent: clampPercent(source.maxPercent === undefined ? 100 : source.maxPercent),
+    manualPercent: clampPercent(source.manualPercent === undefined ? 4 : source.manualPercent),
+    maxPercent: clampPercent(source.maxPercent === undefined ? 5 : source.maxPercent),
     minPercent: clampPercent(source.minPercent === undefined ? 0 : source.minPercent),
     luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 50),
     luxBright: clamp(source.luxBright === undefined ? 180 : source.luxBright, 0, 400),
-    idleSeconds: Math.min(60, whole(source.idleSeconds === undefined ? 5 : source.idleSeconds, 0, 3600) || 0),
-    fadeMs: whole(source.fadeMs === undefined ? 1000 : source.fadeMs, 200, 1000) || 1000,
+    idleSeconds: Math.min(60, whole(source.idleSeconds === undefined ? 2 : source.idleSeconds, 0, 3600) || 0),
+    fadeMs: whole(source.fadeMs === undefined ? 276 : source.fadeMs, 200, 1000) || 276,
     pollIntervalMs: whole(source.pollIntervalMs === undefined ? 1000 : source.pollIntervalMs, 500, 10000) || 1000,
     smoothing: clamp(source.smoothing === undefined ? 0.4 : source.smoothing, 0, 0.95)
   }
@@ -114,12 +114,11 @@ function approach(shown, target, step) {
 
 // A full swing defaults to one second, which is also the longest the slider
 // allows. Shorter moves keep a minimum so a small change still eases.
-var FULL_FADE_MS = 1000
+var FULL_FADE_MS = 276
 var MIN_FADE_MS = 400
 
 function fadeDuration(fromPercent, toPercent, fullMs, fullSpan) {
-  var full = whole(fullMs === undefined || fullMs === null ? FULL_FADE_MS : fullMs, 200, 1000)
-  if (full === null) full = FULL_FADE_MS
+  var full = clamp(fullMs === undefined || fullMs === null ? FULL_FADE_MS : fullMs, 200, 1000)
   var distance = Math.abs(Number(toPercent) - Number(fromPercent))
   if (!isFinite(distance) || distance <= 0) return Math.min(full, MIN_FADE_MS)
   var span = Number(fullSpan)

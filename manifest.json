@@ -19,13 +19,13 @@
     "defaultSection": "right",
     "defaults": {
       "auto": true,
-      "manualPercent": 40,
-      "maxPercent": 100,
+      "manualPercent": 4,
+      "maxPercent": 5,
       "minPercent": 0,
       "luxDark": 8,
       "luxBright": 180,
-      "idleSeconds": 5,
-      "fadeMs": 1000,
+      "idleSeconds": 2,
+      "fadeMs": 276,
       "pollIntervalMs": 1000,
       "smoothing": 0.4
     },
@@ -43,7 +43,7 @@
         "min": 0,
         "max": 100,
         "step": 5,
-        "defaultValue": 40
+        "defaultValue": 4
       },
       {
         "key": "maxPercent",
@@ -52,7 +52,7 @@
         "min": 0,
         "max": 100,
         "step": 5,
-        "defaultValue": 100
+        "defaultValue": 5
       },
       {
         "key": "minPercent",
@@ -88,7 +88,7 @@
         "min": 0,
         "max": 60,
         "step": 1,
-        "defaultValue": 5
+        "defaultValue": 2
       },
       {
         "key": "fadeMs",
@@ -97,7 +97,7 @@
         "min": 200,
         "max": 1000,
         "step": 100,
-        "defaultValue": 1000
+        "defaultValue": 276
       },
       {
         "key": "pollIntervalMs",
