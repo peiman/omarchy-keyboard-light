@@ -111,6 +111,31 @@ function approach(shown, target, step) {
   return from + (delta > 0 ? pace : -pace)
 }
 
+// A full swing takes about a second and a half. Shorter moves keep a minimum
+// so a small change still eases instead of popping.
+var FULL_FADE_MS = 1500
+var MIN_FADE_MS = 400
+
+function fadeDuration(fromPercent, toPercent) {
+  var span = Math.abs(Number(toPercent) - Number(fromPercent)) / 100
+  if (!isFinite(span) || span <= 0) return MIN_FADE_MS
+  return Math.max(MIN_FADE_MS, Math.round(FULL_FADE_MS * Math.min(1, span)))
+}
+
+function fadePercent(fromPercent, toPercent, elapsedMs, durationMs) {
+  var from = Number(fromPercent)
+  var to = Number(toPercent)
+  var duration = Number(durationMs)
+  if (!isFinite(from)) return to
+  if (!isFinite(to)) return from
+  if (!isFinite(duration) || duration <= 0) return to
+  var t = Number(elapsedMs) / duration
+  if (!isFinite(t) || t <= 0) return from
+  if (t >= 1) return to
+  var eased = t * t * (3 - 2 * t)
+  return from + (to - from) * eased
+}
+
 function percentFromLevel(level, maxBrightness) {
   var max = whole(maxBrightness, 1, 1000000)
   var value = whole(level, 0, 1000000)

@@ -41,6 +41,10 @@ Item {
   property int externalPercent: 0
   property bool loggedReady: false
   property bool warned: false
+  property real fadeFrom: 0
+  property real fadeTo: 0
+  property double fadeStartMs: 0
+  property int fadeDurationMs: 1500
 
   readonly property bool available: ledName !== ""
   readonly property int percent: Math.round(shownPercent)
@@ -143,24 +147,36 @@ Item {
     if (suspended || ledName === "" || !seeded) return
     var next = Model.desiredPercent(config, smoothedLux, hasSensor, hold, holdPercent, userIdle)
     targetPercent = next
+    if (fadeTimer.running && Math.abs(fadeTo - next) < 0.6) return
+    beginFade(next)
+  }
+
+  function beginFade(next) {
     if (Math.abs(shownPercent - next) < 0.6) {
       shownPercent = next
       fadeTimer.stop()
       writePercent(next)
       return
     }
+    fadeFrom = shownPercent
+    fadeTo = next
+    fadeStartMs = Date.now()
+    fadeDurationMs = Model.fadeDuration(shownPercent, next)
     if (!fadeTimer.running) fadeTimer.start()
   }
 
+  // Time-based so a full swing stays near a second and a half even though a
+  // brightnessctl write itself returns in a couple of milliseconds. The old
+  // 8% steps finished in under half a second and read as a blink.
   function stepFade() {
     if (suspended || ledName === "") {
       fadeTimer.stop()
       return
     }
-    var next = Model.approach(shownPercent, targetPercent, 8)
+    var next = Model.fadePercent(fadeFrom, fadeTo, Date.now() - fadeStartMs, fadeDurationMs)
     shownPercent = next
     writePercent(next)
-    if (next === targetPercent) fadeTimer.stop()
+    if (next === fadeTo) fadeTimer.stop()
   }
 
   function writePercent(percent) {
@@ -232,7 +248,7 @@ Item {
 
   Timer {
     id: fadeTimer
-    interval: 40
+    interval: 30
     repeat: true
     onTriggered: root.stepFade()
   }

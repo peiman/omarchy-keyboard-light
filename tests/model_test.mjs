@@ -7,8 +7,8 @@ const source = readFileSync(join(root, "Model.js"), "utf8").replace(/^\.pragma l
 const model = new Function(source + `
 return {
   withDefaults, mapLux, ambientPercent, desiredPercent, smooth, isExternal,
-  holdReleased, approach, percentFromLevel, levelFromPercent, nearestPreset,
-  stepPreset, parseProbe, statusLine, neutralize, ledNameOk, OVERRIDE_LUX
+  holdReleased, approach, fadeDuration, fadePercent, percentFromLevel, levelFromPercent,
+  nearestPreset, stepPreset, parseProbe, statusLine, neutralize, ledNameOk, OVERRIDE_LUX
 };
 `)()
 
@@ -52,6 +52,11 @@ check("hold stays inside twenty lux", model.holdReleased(20, 8, model.OVERRIDE_L
 
 check("approach finishes inside one step", model.approach(96, 100, 8) === 100)
 check("approach walks toward the target", model.approach(0, 100, 8) === 8)
+check("a full fade lasts a second and a half", model.fadeDuration(0, 100) === 1500)
+check("a short fade still eases", model.fadeDuration(0, 10) === 400)
+check("fade starts at the current level", model.fadePercent(0, 100, 0, 1500) === 0)
+check("fade ends at the target", model.fadePercent(100, 0, 1500, 1500) === 0)
+check("fade is halfway at the midpoint", model.fadePercent(0, 100, 750, 1500) === 50)
 check("level rounds from percent", model.levelFromPercent(50, 255) === 128)
 check("percent rounds from level", model.percentFromLevel(255, 255) === 100)
 
