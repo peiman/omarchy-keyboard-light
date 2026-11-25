@@ -204,7 +204,7 @@ Panel {
     anchors.fill: parent
     bar: root.bar
     text: String.fromCodePoint(0xF030C)
-    dimmed: root.livePercent <= 0
+    dimmed: !root.config.auto || !root.hasSensor
     tooltipText: root.statusText
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) {
