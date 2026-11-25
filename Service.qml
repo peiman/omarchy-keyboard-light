@@ -101,8 +101,10 @@ Item {
       shownPercent = Model.percentFromLevel(parsed.brightness, parsed.max)
     }
 
+    // A fade writes a new level every step. A sample caught between two steps
+    // is our own write, not a brightness key.
     var baseline = inflight >= 0 ? commanded : lastWritten
-    if (Model.isExternal(parsed.brightness, baseline, parsed.max)) {
+    if (!fadeTimer.running && inflight < 0 && Model.isExternal(parsed.brightness, baseline, parsed.max)) {
       acceptExternal(parsed.brightness)
       return
     }
