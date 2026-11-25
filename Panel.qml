@@ -33,6 +33,7 @@ Panel {
 
   property int cursorIndex: 0
   property bool cursorActive: false
+  property bool numberEditing: false
 
   Commons.Translations {
     id: strings
@@ -81,8 +82,8 @@ Panel {
   function sliderSpec(key) {
     if (key === "manualPercent" || key === "maxPercent" || key === "minPercent")
       return { minimum: 0, maximum: 100, step: 5 }
-    if (key === "luxDark") return { minimum: 0, maximum: 500, step: 1 }
-    if (key === "luxBright") return { minimum: 1, maximum: 2000, step: 10 }
+    if (key === "luxDark") return { minimum: 0, maximum: 50, step: 1 }
+    if (key === "luxBright") return { minimum: 0, maximum: 400, step: 10 }
     if (key === "fadeMs") return { minimum: 200, maximum: 1000, step: 100 }
     if (key === "idleSeconds") return { minimum: 0, maximum: 60, step: 1 }
     return null
@@ -90,6 +91,19 @@ Panel {
 
   function fadeReadout(ms) {
     return strings.t("panel.fadeSeconds").arg(Commons.I18n.formatNumber(Number(ms) / 1000, 1))
+  }
+
+  function editSeed(key, value) {
+    if (key === "fadeMs") {
+      var seconds = Math.round(Number(value)) / 1000
+      return seconds.toFixed(3).replace(/0+$/, "").replace(/\.$/, "")
+    }
+    return String(Math.round(Number(value)))
+  }
+
+  function restorePanelFocus() {
+    numberEditing = false
+    keyCatcher.forceActiveFocus()
   }
 
   function idleReadout(seconds) {
@@ -162,7 +176,9 @@ Panel {
   onServiceChanged: pushSettings()
   Component.onCompleted: pushSettings()
   onRowsChanged: if (cursorIndex >= rows.length) cursorIndex = Math.max(0, rows.length - 1)
-  onOpenedChanged: if (opened) {
+  onOpenedChanged: {
+    if (!opened) numberEditing = false
+    if (!opened) return
     cursorActive = false
     cursorIndex = 0
     if (service) service.poll()
@@ -236,6 +252,7 @@ Panel {
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
+      blocked: root.numberEditing
       onMoveRequested: function(dx, dy) {
         if (!root.cursorActive) { root.cursorActive = true; return }
         if (dy !== 0) root.moveCursor(dy)
@@ -464,6 +481,36 @@ Panel {
     readonly property int currentValue: Math.round(Number(root.config[settingKey]))
     readonly property bool focused: root.hasCursorOn(settingKey)
     readonly property bool canUseReading: showUseCurrent && root.liveLux !== null && root.liveLux !== undefined
+    property bool editing: false
+
+    function beginEdit() {
+      editor.text = root.editSeed(settingKey, currentValue)
+      editing = true
+      root.numberEditing = true
+      root.cursorActive = true
+      root.cursorIndex = Math.max(0, root.rowIndex(settingKey))
+      Qt.callLater(function() {
+        editor.forceActiveFocus()
+        editor.selectAll()
+      })
+    }
+
+    function commitEdit() {
+      if (!editing) return
+      editing = false
+      root.numberEditing = false
+      var parsed = Model.parseEditedNumber(settingKey, editor.text)
+      root.restorePanelFocus()
+      if (parsed === null) return
+      root.commitSetting(settingKey, parsed)
+    }
+
+    function cancelEdit() {
+      if (!editing) return
+      editing = false
+      root.numberEditing = false
+      root.restorePanelFocus()
+    }
 
     spacing: Style.spacing.labelGap
 
@@ -499,21 +546,60 @@ Panel {
         }
       }
 
-      Text {
-        id: valueText
-        textFormat: Text.PlainText
-        text: {
-          var language = strings.language
-          var value = slider.dragging ? slider.liveValue : rowRoot.currentValue
-          if (rowRoot.settingKey === "fadeMs") return root.fadeReadout(value)
-          if (rowRoot.settingKey === "idleSeconds") return root.idleReadout(value)
-          return Math.round(value) + rowRoot.suffix
-        }
-        color: root.foreground
-        font.family: root.fontFamily
-        font.pixelSize: Style.font.bodySmall
-        font.bold: true
+      Item {
+        id: valueBox
+        width: Math.max(valueText.implicitWidth, Style.space(36))
+        height: Math.max(valueText.implicitHeight, editor.implicitHeight)
         anchors.verticalCenter: parent.verticalCenter
+
+        Text {
+          id: valueText
+          visible: !rowRoot.editing
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          textFormat: Text.PlainText
+          text: {
+            var language = strings.language
+            var value = slider.dragging ? slider.liveValue : rowRoot.currentValue
+            if (rowRoot.settingKey === "fadeMs") return root.fadeReadout(value)
+            if (rowRoot.settingKey === "idleSeconds") return root.idleReadout(value)
+            return Math.round(value) + rowRoot.suffix
+          }
+          color: root.foreground
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.bodySmall
+          font.bold: true
+        }
+
+        TextInput {
+          id: editor
+          visible: rowRoot.editing
+          anchors.fill: parent
+          text: ""
+          color: root.foreground
+          selectionColor: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.25)
+          selectedTextColor: root.foreground
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.bodySmall
+          font.bold: true
+          horizontalAlignment: Text.AlignRight
+          verticalAlignment: Text.AlignVCenter
+          clip: true
+          selectByMouse: true
+          onAccepted: rowRoot.commitEdit()
+          onActiveFocusChanged: if (!activeFocus) rowRoot.commitEdit()
+          Keys.onEscapePressed: function(event) {
+            rowRoot.cancelEdit()
+            event.accepted = true
+          }
+        }
+
+        MouseArea {
+          anchors.fill: parent
+          enabled: !rowRoot.editing
+          cursorShape: Qt.IBeamCursor
+          onClicked: rowRoot.beginEdit()
+        }
       }
     }
 

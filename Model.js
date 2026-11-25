@@ -32,8 +32,8 @@ function withDefaults(settings) {
     manualPercent: clampPercent(source.manualPercent === undefined ? 40 : source.manualPercent),
     maxPercent: clampPercent(source.maxPercent === undefined ? 100 : source.maxPercent),
     minPercent: clampPercent(source.minPercent === undefined ? 0 : source.minPercent),
-    luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 100000),
-    luxBright: clamp(source.luxBright === undefined ? 180 : source.luxBright, 0, 100000),
+    luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 50),
+    luxBright: clamp(source.luxBright === undefined ? 180 : source.luxBright, 0, 400),
     idleSeconds: Math.min(60, whole(source.idleSeconds === undefined ? 5 : source.idleSeconds, 0, 3600) || 0),
     fadeMs: whole(source.fadeMs === undefined ? 1000 : source.fadeMs, 200, 1000) || 1000,
     pollIntervalMs: whole(source.pollIntervalMs === undefined ? 1000 : source.pollIntervalMs, 500, 10000) || 1000,
@@ -188,6 +188,18 @@ function neutralize(value) {
     .replace(/&/g, "\uFF06")
     .replace(/</g, "\uFF1C")
     .replace(/>/g, "\uFF1E")
+}
+
+// The field shows a plain number. Fade is seconds. Anything else is rejected
+// so a pasted tag cannot become a setting.
+function parseEditedNumber(key, text) {
+  var raw = String(text === undefined || text === null ? "" : text).trim().replace(/,/g, ".")
+  raw = raw.replace(/\s*(s|lx|%)\s*$/i, "")
+  if (!/^-?\d+(\.\d+)?$/.test(raw)) return null
+  var number = Number(raw)
+  if (!isFinite(number)) return null
+  if (key === "fadeMs") return Math.round(number * 1000)
+  return number
 }
 
 function ledNameOk(value) {

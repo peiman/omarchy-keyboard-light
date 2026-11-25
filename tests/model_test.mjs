@@ -8,7 +8,7 @@ const model = new Function(source + `
 return {
   withDefaults, mapLux, ambientPercent, desiredPercent, smooth, isExternal,
   holdReleased, approach, fadeDuration, fadePercent, percentFromLevel, levelFromPercent,
-  nearestPreset, stepPreset, parseProbe, statusLine, neutralize, ledNameOk, OVERRIDE_LUX
+  nearestPreset, stepPreset, parseEditedNumber, parseProbe, statusLine, neutralize, ledNameOk, OVERRIDE_LUX
 };
 `)()
 
@@ -76,6 +76,10 @@ const clean = model.neutralize(attack)
 check("markup brackets are gone", !clean.includes("<") && !clean.includes(">") && !clean.includes(attack))
 check("status line cannot carry a tag", !model.statusLine(40, 3, "lux", attack).includes("<"))
 check("device names stay plain ids", model.ledNameOk("kbd_backlight") && !model.ledNameOk(attack))
+check("a typed lux value is kept", model.parseEditedNumber("luxDark", "8 lx") === 8)
+check("a typed fade is seconds", model.parseEditedNumber("fadeMs", "0.3") === 300)
+check("a typed tag is rejected", model.parseEditedNumber("luxBright", attack) === null)
+check("an empty number is rejected", model.parseEditedNumber("idleSeconds", "") === null)
 
 function probe(fields) {
   return Object.keys(fields).map(function(key) { return key + "\t" + fields[key] }).join("\n") + "\n"

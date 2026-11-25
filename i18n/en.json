@@ -20,7 +20,7 @@
   "panel.roomHelp": "At or under Dark below, the keys use the dark level. At or over Bright above, they use the bright level.",
   "panel.useReading": "Use %1",
   "panel.held": "Holding %1% until the room light changes.",
-  "panel.hint": "j/k move · h/l adjust · a toggles auto · enter uses the reading",
+  "panel.hint": "j/k move · h/l adjust · a toggles auto · click a number to type",
   "bar.level": "%1%",
   "bar.lux": "%1 lx",
   "bar.raw": "%1",

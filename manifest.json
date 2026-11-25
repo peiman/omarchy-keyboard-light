@@ -68,7 +68,7 @@
         "type": "integer",
         "label": "Dark at or below (lux)",
         "min": 0,
-        "max": 100000,
+        "max": 50,
         "step": 1,
         "defaultValue": 8
       },
@@ -77,7 +77,7 @@
         "type": "integer",
         "label": "Bright at or above (lux)",
         "min": 0,
-        "max": 100000,
+        "max": 400,
         "step": 10,
         "defaultValue": 180
       },
