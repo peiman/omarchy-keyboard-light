@@ -35,7 +35,7 @@ function withDefaults(settings) {
     luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 100000),
     luxBright: clamp(source.luxBright === undefined ? 180 : source.luxBright, 0, 100000),
     idleSeconds: whole(source.idleSeconds === undefined ? 5 : source.idleSeconds, 0, 3600) || 0,
-    fadeMs: whole(source.fadeMs === undefined ? 1500 : source.fadeMs, 200, 4000) || 1500,
+    fadeMs: whole(source.fadeMs === undefined ? 1000 : source.fadeMs, 200, 1000) || 1000,
     pollIntervalMs: whole(source.pollIntervalMs === undefined ? 1000 : source.pollIntervalMs, 500, 10000) || 1000,
     smoothing: clamp(source.smoothing === undefined ? 0.4 : source.smoothing, 0, 0.95)
   }
@@ -112,13 +112,13 @@ function approach(shown, target, step) {
   return from + (delta > 0 ? pace : -pace)
 }
 
-// A full swing takes about a second and a half. Shorter moves keep a minimum
-// so a small change still eases instead of popping.
-var FULL_FADE_MS = 1500
+// A full swing defaults to one second, which is also the longest the slider
+// allows. Shorter moves keep a minimum so a small change still eases.
+var FULL_FADE_MS = 1000
 var MIN_FADE_MS = 400
 
 function fadeDuration(fromPercent, toPercent, fullMs) {
-  var full = whole(fullMs === undefined || fullMs === null ? FULL_FADE_MS : fullMs, 200, 4000)
+  var full = whole(fullMs === undefined || fullMs === null ? FULL_FADE_MS : fullMs, 200, 1000)
   if (full === null) full = FULL_FADE_MS
   var span = Math.abs(Number(toPercent) - Number(fromPercent)) / 100
   if (!isFinite(span) || span <= 0) return Math.min(full, MIN_FADE_MS)

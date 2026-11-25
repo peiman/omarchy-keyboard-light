@@ -41,11 +41,11 @@ Item {
   property int externalPercent: 0
   property bool loggedReady: false
   property bool warned: false
-  property int appliedFadeMs: 1500
+  property int appliedFadeMs: 1000
   property real fadeFrom: 0
   property real fadeTo: 0
   property double fadeStartMs: 0
-  property int fadeDurationMs: 1500
+  property int fadeDurationMs: 1000
   property bool fading: false
 
   readonly property bool available: ledName !== ""
@@ -90,6 +90,7 @@ Item {
 
     if (parsed.locked || parsed.lid) {
       suspended = true
+      fading = false
       fadeTimer.stop()
       return
     }
@@ -123,6 +124,7 @@ Item {
   }
 
   function acceptExternal(level) {
+    fading = false
     fadeTimer.stop()
     var pct = Model.percentFromLevel(level, maxBrightness)
     shownPercent = pct
@@ -207,6 +209,7 @@ Item {
 
   function applyImmediate(percent) {
     var pct = Model.clampPercent(percent)
+    fading = false
     fadeTimer.stop()
     hold = false
     shownPercent = pct

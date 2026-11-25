@@ -83,7 +83,7 @@ Panel {
       return { minimum: 0, maximum: 100, step: 5 }
     if (key === "luxDark") return { minimum: 0, maximum: 500, step: 1 }
     if (key === "luxBright") return { minimum: 1, maximum: 2000, step: 10 }
-    if (key === "fadeMs") return { minimum: 200, maximum: 4000, step: 100 }
+    if (key === "fadeMs") return { minimum: 200, maximum: 1000, step: 100 }
     return null
   }
 
@@ -204,9 +204,7 @@ Panel {
     anchors.fill: parent
     bar: root.bar
     text: String.fromCodePoint(0xF030C)
-    foreground: root.livePercent <= 0
-      ? Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.45)
-      : Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.45 + 0.55 * root.livePercent / 100)
+    dimmed: root.livePercent <= 0
     tooltipText: root.statusText
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) {

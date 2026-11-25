@@ -4,7 +4,7 @@ An [Omarchy](https://omarchy.org) shell plugin that drives the keyboard backligh
 
 - In a dark room the keys come on. In a bright room they go off. Between 8 and 180 lux the level falls in a straight line. Those two points are the defaults and can be changed.
 - After you stop typing the light fades out. The next key or touch brings it back. The default wait is 5 seconds. A video that keeps the screen awake does not keep the keys lit.
-- A full change eases over 1.5 seconds. The Fade slider in the panel runs from 0.2 seconds to 4 seconds. A smaller change takes less of that time.
+- A full change eases over 1 second. The Fade slider in the panel runs from 0.2 seconds to 1 second. A smaller change takes less of that time.
 - Ctrl and the display-brightness keys (or a real keyboard-brightness key) set a level by hand. Automatic control waits until the room light moves by about 20 lux, then takes over again.
 - While the screen is locked, or the lid is closed, the plugin stops writing so Omarchy can turn the keys off.
 
