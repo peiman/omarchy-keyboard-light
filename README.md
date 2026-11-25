@@ -36,7 +36,7 @@ omarchy bar move io.github.peiman.keyboard-light --section right
 | a | Follow the room, or stop |
 | Enter | On a threshold, use the current reading |
 
-The icon is lit while automatic control is on, and faded while it is off.
+The icon stays lit.
 
 ## Remove
 
