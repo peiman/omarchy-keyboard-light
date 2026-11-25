@@ -208,10 +208,15 @@ Item {
     retarget()
   }
 
-  onSettingsChanged: {
-    if (config.idleSeconds <= 0) userIdle = false
-    if (hold && Model.holdReleased(smoothedLux, holdLux, Model.OVERRIDE_LUX)) hold = false
-    retarget()
+  // settings is applied before later properties exist, so this waits a turn.
+  onSettingsChanged: Qt.callLater(root.applySettings)
+
+  function applySettings() {
+    if (!root.config) return
+    if (root.config.idleSeconds <= 0) root.userIdle = false
+    if (root.hold && Model.holdReleased(root.smoothedLux, root.holdLux, Model.OVERRIDE_LUX))
+      root.hold = false
+    root.retarget()
   }
 
   Timer {
@@ -234,8 +239,8 @@ Item {
   // the display awake while the keys still go dark, which is how a Mac behaves.
   IdleMonitor {
     id: idleMonitor
-    enabled: root.available && root.config.idleSeconds > 0
-    timeout: Math.max(1, root.config.idleSeconds)
+    enabled: root.available && root.config && root.config.idleSeconds > 0
+    timeout: Math.max(1, root.config ? root.config.idleSeconds : 5)
     respectInhibitors: false
     onIsIdleChanged: root.noteIdle(isIdle)
   }
