@@ -166,9 +166,11 @@ Item {
     fadeFrom = shownPercent
     fadeTo = next
     fadeStartMs = Date.now()
-    fadeDurationMs = Model.fadeDuration(shownPercent, next, config.fadeMs)
-    fading = true
+    var range = Math.abs(config.maxPercent - config.minPercent)
+    var span = Math.max(range, Math.abs(shownPercent - next))
+    fadeDurationMs = Model.fadeDuration(shownPercent, next, config.fadeMs, span)
     if (!fadeTimer.running) fadeTimer.start()
+    fading = true
   }
 
   // Time-based so a full swing stays near a second and a half even though a

@@ -117,13 +117,16 @@ function approach(shown, target, step) {
 var FULL_FADE_MS = 1000
 var MIN_FADE_MS = 400
 
-function fadeDuration(fromPercent, toPercent, fullMs) {
+function fadeDuration(fromPercent, toPercent, fullMs, fullSpan) {
   var full = whole(fullMs === undefined || fullMs === null ? FULL_FADE_MS : fullMs, 200, 1000)
   if (full === null) full = FULL_FADE_MS
-  var span = Math.abs(Number(toPercent) - Number(fromPercent)) / 100
-  if (!isFinite(span) || span <= 0) return Math.min(full, MIN_FADE_MS)
+  var distance = Math.abs(Number(toPercent) - Number(fromPercent))
+  if (!isFinite(distance) || distance <= 0) return Math.min(full, MIN_FADE_MS)
+  var span = Number(fullSpan)
+  if (!isFinite(span) || span <= 0) span = 100
+  var portion = Math.min(1, distance / span)
   var shortest = Math.min(full, MIN_FADE_MS)
-  return Math.max(shortest, Math.round(full * Math.min(1, span)))
+  return Math.max(shortest, Math.round(full * portion))
 }
 
 function fadePercent(fromPercent, toPercent, elapsedMs, durationMs) {
