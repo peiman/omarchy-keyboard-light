@@ -5,7 +5,7 @@
 // nothing here is shown until it has been bounded.
 var MAX_PROBE_CHARS = 2048
 var OVERRIDE_LUX = 20
-var IDLE_PRESETS = [0, 5, 10, 30, 60, 300]
+var IDLE_PRESETS = [0, 3, 5, 10, 30, 60]
 
 function clamp(value, lo, hi) {
   var number = Number(value)

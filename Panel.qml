@@ -351,11 +351,11 @@ Panel {
             Repeater {
               model: [
                 { seconds: 0, key: "panel.idle0" },
+                { seconds: 3, key: "panel.idle3" },
                 { seconds: 5, key: "panel.idle5" },
                 { seconds: 10, key: "panel.idle10" },
                 { seconds: 30, key: "panel.idle30" },
-                { seconds: 60, key: "panel.idle60" },
-                { seconds: 300, key: "panel.idle300" }
+                { seconds: 60, key: "panel.idle60" }
               ]
               delegate: Button {
                 required property var modelData
