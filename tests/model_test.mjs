@@ -66,7 +66,8 @@ check("percent rounds from level", model.percentFromLevel(255, 255) === 100)
 check("idle preset snaps", model.nearestPreset(7) === 5)
 check("idle preset steps up", model.stepPreset(5, 1) === 10)
 check("idle preset stays at the end", model.stepPreset(60, 1) === 60)
-check("three seconds is a preset", model.stepPreset(0, 1) === 3)
+check("one second is the first timed preset", model.stepPreset(0, 1) === 1)
+check("three seconds follows one second", model.stepPreset(1, 1) === 3)
 
 const attack = '<img src="https://example.invalid/tracker">'
 const clean = model.neutralize(attack)

@@ -340,6 +340,7 @@ Panel {
             Repeater {
               model: [
                 { seconds: 0, key: "panel.idle0" },
+                { seconds: 1, key: "panel.idle1" },
                 { seconds: 3, key: "panel.idle3" },
                 { seconds: 5, key: "panel.idle5" },
                 { seconds: 10, key: "panel.idle10" },

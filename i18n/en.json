@@ -10,6 +10,7 @@
   "panel.fadeHelp": "How long a full change takes. A smaller change is shorter.",
   "panel.fadeSeconds": "%1 s",
   "panel.idle0": "Never",
+  "panel.idle1": "1s",
   "panel.idle3": "3s",
   "panel.idle5": "5s",
   "panel.idle10": "10s",
