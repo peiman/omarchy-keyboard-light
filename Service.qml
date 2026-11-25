@@ -148,14 +148,14 @@ Item {
     if (suspended || ledName === "" || !seeded) return
     var next = Model.desiredPercent(config, smoothedLux, hasSensor, hold, holdPercent, userIdle)
     targetPercent = next
-    if (fadeTimer.running && Math.abs(fadeTo - next) < 0.6) return
+    if (fadeTimer && fadeTimer.running && Math.abs(fadeTo - next) < 0.6) return
     beginFade(next)
   }
 
   function beginFade(next) {
     if (Math.abs(shownPercent - next) < 0.6) {
       shownPercent = next
-      fadeTimer.stop()
+      if (fadeTimer) fadeTimer.stop()
       writePercent(next)
       return
     }
@@ -163,7 +163,7 @@ Item {
     fadeTo = next
     fadeStartMs = Date.now()
     fadeDurationMs = Model.fadeDuration(shownPercent, next, config.fadeMs)
-    if (!fadeTimer.running) fadeTimer.start()
+    if (fadeTimer && !fadeTimer.running) fadeTimer.start()
   }
 
   // Time-based so a full swing stays near a second and a half even though a
@@ -237,7 +237,7 @@ Item {
       root.hold = false
     var fadeChanged = root.appliedFadeMs !== root.config.fadeMs
     root.appliedFadeMs = root.config.fadeMs
-    if (fadeChanged && fadeTimer.running) {
+    if (fadeChanged && fadeTimer && fadeTimer.running) {
       root.beginFade(root.fadeTo)
       return
     }
