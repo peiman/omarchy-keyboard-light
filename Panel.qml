@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.Commons
@@ -221,7 +220,10 @@ Panel {
         root.toggle()
       }
     }
-    onWheelMoved: function(delta) { root.nudge(delta > 0 ? 10 : -10) }
+    onWheelMoved: function(delta) {
+      if (root.opened) return
+      root.nudge(delta > 0 ? 10 : -10)
+    }
   }
 
   KeyboardPanel {
@@ -232,7 +234,7 @@ Panel {
     open: root.opened
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(340))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight, Style.space(560))
+    contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
     PanelKeyCatcher {
       id: keyCatcher
@@ -249,21 +251,10 @@ Panel {
         if (text === "a" || text === "A") root.toggleAuto()
       }
 
-      Flickable {
-        id: panelFlick
-        anchors.fill: parent
-        contentWidth: width
-        contentHeight: column.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-        flickableDirection: Flickable.VerticalFlick
-        interactive: contentHeight > height
-        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
-
-        Column {
-          id: column
-          width: panelFlick.width
-          spacing: Style.space(12)
+      Column {
+        id: column
+        width: parent.width
+        spacing: Style.space(12)
 
           Item {
             id: header
@@ -486,7 +477,6 @@ Panel {
             font.pixelSize: Style.font.caption
             wrapMode: Text.WordWrap
           }
-        }
       }
     }
   }
