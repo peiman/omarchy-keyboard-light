@@ -46,6 +46,7 @@ Item {
   property real fadeTo: 0
   property double fadeStartMs: 0
   property int fadeDurationMs: 1500
+  property bool fading: false
 
   readonly property bool available: ledName !== ""
   readonly property int percent: Math.round(shownPercent)
@@ -148,14 +149,15 @@ Item {
     if (suspended || ledName === "" || !seeded) return
     var next = Model.desiredPercent(config, smoothedLux, hasSensor, hold, holdPercent, userIdle)
     targetPercent = next
-    if (fadeTimer && fadeTimer.running && Math.abs(fadeTo - next) < 0.6) return
+    if (fading && Math.abs(fadeTo - next) < 0.6) return
     beginFade(next)
   }
 
   function beginFade(next) {
     if (Math.abs(shownPercent - next) < 0.6) {
       shownPercent = next
-      if (fadeTimer) fadeTimer.stop()
+      fading = false
+      fadeTimer.stop()
       writePercent(next)
       return
     }
@@ -163,7 +165,8 @@ Item {
     fadeTo = next
     fadeStartMs = Date.now()
     fadeDurationMs = Model.fadeDuration(shownPercent, next, config.fadeMs)
-    if (fadeTimer && !fadeTimer.running) fadeTimer.start()
+    fading = true
+    if (!fadeTimer.running) fadeTimer.start()
   }
 
   // Time-based so a full swing stays near a second and a half even though a
@@ -171,13 +174,17 @@ Item {
   // 8% steps finished in under half a second and read as a blink.
   function stepFade() {
     if (suspended || ledName === "") {
+      fading = false
       fadeTimer.stop()
       return
     }
     var next = Model.fadePercent(fadeFrom, fadeTo, Date.now() - fadeStartMs, fadeDurationMs)
     shownPercent = next
     writePercent(next)
-    if (next === fadeTo) fadeTimer.stop()
+    if (next === fadeTo) {
+      fading = false
+      fadeTimer.stop()
+    }
   }
 
   function writePercent(percent) {
@@ -237,7 +244,7 @@ Item {
       root.hold = false
     var fadeChanged = root.appliedFadeMs !== root.config.fadeMs
     root.appliedFadeMs = root.config.fadeMs
-    if (fadeChanged && fadeTimer && fadeTimer.running) {
+    if (fadeChanged && fading) {
       root.beginFade(root.fadeTo)
       return
     }
