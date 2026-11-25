@@ -237,7 +237,7 @@ Item {
       root.hold = false
     var fadeChanged = root.appliedFadeMs !== root.config.fadeMs
     root.appliedFadeMs = root.config.fadeMs
-    if (fadeChanged && root.fadeTimer.running) {
+    if (fadeChanged && fadeTimer.running) {
       root.beginFade(root.fadeTo)
       return
     }
