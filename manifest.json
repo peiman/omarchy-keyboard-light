@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.peiman.keyboard-light",
+  "name": "Keyboard light",
+  "version": "1.0.0",
+  "author": "peiman",
+  "license": "MIT",
+  "description": "Lights the keyboard in the dark, dims it as the room brightens, and turns it off when you stop typing.",
+  "kinds": ["service", "bar-widget"],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Keyboard light",
+    "description": "Keyboard backlight from the ambient light sensor, with an idle timeout. Click for the curve. Scroll to set a level by hand.",
+    "category": "Hardware",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "auto": true,
+      "manualPercent": 40,
+      "maxPercent": 100,
+      "minPercent": 0,
+      "luxDark": 8,
+      "luxBright": 180,
+      "idleSeconds": 5,
+      "pollIntervalMs": 1000,
+      "smoothing": 0.4
+    },
+    "schema": [
+      {
+        "key": "auto",
+        "type": "boolean",
+        "label": "Follow the light sensor",
+        "defaultValue": true
+      },
+      {
+        "key": "manualPercent",
+        "type": "integer",
+        "label": "Manual level",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultValue": 40
+      },
+      {
+        "key": "maxPercent",
+        "type": "integer",
+        "label": "Level in the dark",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultValue": 100
+      },
+      {
+        "key": "minPercent",
+        "type": "integer",
+        "label": "Level in bright light",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "defaultValue": 0
+      },
+      {
+        "key": "luxDark",
+        "type": "integer",
+        "label": "Dark at or below (lux)",
+        "min": 0,
+        "max": 100000,
+        "step": 1,
+        "defaultValue": 8
+      },
+      {
+        "key": "luxBright",
+        "type": "integer",
+        "label": "Bright at or above (lux)",
+        "min": 0,
+        "max": 100000,
+        "step": 10,
+        "defaultValue": 180
+      },
+      {
+        "key": "idleSeconds",
+        "type": "integer",
+        "label": "Turn off after idle (seconds, 0 keeps it on)",
+        "min": 0,
+        "max": 3600,
+        "step": 5,
+        "defaultValue": 5
+      },
+      {
+        "key": "pollIntervalMs",
+        "type": "integer",
+        "label": "Sensor poll interval (ms)",
+        "min": 500,
+        "max": 10000,
+        "step": 100,
+        "defaultValue": 1000
+      },
+      {
+        "key": "smoothing",
+        "type": "number",
+        "label": "Sensor smoothing (0 snaps, 0.95 crawls)",
+        "min": 0,
+        "max": 0.95,
+        "step": 0.05,
+        "defaultValue": 0.4
+      }
+    ]
+  }
+}
