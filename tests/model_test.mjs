@@ -39,7 +39,7 @@ check("idle zero keeps the room", model.desiredPercent(
 check("manual ignores the room", model.ambientPercent(
   Object.assign({}, dark, { auto: false, manualPercent: 40 }), 1, true, false, 0) === 40)
 check("hold keeps the chosen level", model.ambientPercent(dark, 1, true, true, 25) === 25)
-check("no sensor uses the manual level", model.ambientPercent(dark, null, false, false, 0) === 4)
+check("no sensor uses the manual level", model.ambientPercent(dark, null, false, false, 0) === 40)
 
 check("smoothing takes the first sample", model.smooth(null, 12, 0.4) === 12)
 check("smoothing keeps some of the last sample", Math.abs(model.smooth(10, 0, 0.5) - 5) < 0.001)

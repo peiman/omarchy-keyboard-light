@@ -19,7 +19,7 @@
     "defaultSection": "right",
     "defaults": {
       "auto": true,
-      "manualPercent": 4,
+      "manualPercent": 40,
       "maxPercent": 5,
       "minPercent": 0,
       "luxDark": 8,
@@ -43,7 +43,7 @@
         "min": 0,
         "max": 100,
         "step": 5,
-        "defaultValue": 4
+        "defaultValue": 40
       },
       {
         "key": "maxPercent",

@@ -29,7 +29,7 @@ function withDefaults(settings) {
   var source = settings && typeof settings === "object" ? settings : {}
   return {
     auto: source.auto !== false,
-    manualPercent: clampPercent(source.manualPercent === undefined ? 4 : source.manualPercent),
+    manualPercent: clampPercent(source.manualPercent === undefined ? 40 : source.manualPercent),
     maxPercent: clampPercent(source.maxPercent === undefined ? 5 : source.maxPercent),
     minPercent: clampPercent(source.minPercent === undefined ? 0 : source.minPercent),
     luxDark: clamp(source.luxDark === undefined ? 8 : source.luxDark, 0, 50),
