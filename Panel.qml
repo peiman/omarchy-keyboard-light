@@ -498,9 +498,8 @@ Panel {
     function commitEdit() {
       if (!editing) return
       editing = false
-      root.numberEditing = false
       var parsed = Model.parseEditedNumber(settingKey, editor.text)
-      root.restorePanelFocus()
+      Qt.callLater(root.restorePanelFocus)
       if (parsed === null) return
       root.commitSetting(settingKey, parsed)
     }
@@ -508,8 +507,7 @@ Panel {
     function cancelEdit() {
       if (!editing) return
       editing = false
-      root.numberEditing = false
-      root.restorePanelFocus()
+      Qt.callLater(root.restorePanelFocus)
     }
 
     spacing: Style.spacing.labelGap
@@ -520,13 +518,14 @@ Panel {
 
       Text {
         textFormat: Text.PlainText
-        width: parent.width - valueText.implicitWidth - parent.spacing
+        width: parent.width - valueBox.width - parent.spacing
           - (useCurrent.visible ? useCurrent.implicitWidth + parent.spacing : 0)
         text: rowRoot.label
         color: rowRoot.focused ? root.foreground : root.dim
         font.family: root.fontFamily
         font.pixelSize: Style.font.bodySmall
         elide: Text.ElideRight
+        verticalAlignment: Text.AlignVCenter
         anchors.verticalCenter: parent.verticalCenter
       }
 
@@ -548,7 +547,7 @@ Panel {
 
       Item {
         id: valueBox
-        width: Math.max(valueText.implicitWidth, Style.space(36))
+        width: Math.max(Style.space(72), valueText.implicitWidth + Style.space(16))
         height: Math.max(valueText.implicitHeight, editor.implicitHeight)
         anchors.verticalCenter: parent.verticalCenter
 
@@ -556,6 +555,7 @@ Panel {
           id: valueText
           visible: !rowRoot.editing
           anchors.right: parent.right
+          anchors.rightMargin: Style.space(8)
           anchors.verticalCenter: parent.verticalCenter
           textFormat: Text.PlainText
           text: {
@@ -575,7 +575,7 @@ Panel {
           id: editor
           visible: rowRoot.editing
           anchors.fill: parent
-          text: ""
+          anchors.rightMargin: Style.space(8)
           color: root.foreground
           selectionColor: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.25)
           selectedTextColor: root.foreground
@@ -586,11 +586,15 @@ Panel {
           verticalAlignment: Text.AlignVCenter
           clip: true
           selectByMouse: true
-          onAccepted: rowRoot.commitEdit()
           onActiveFocusChanged: if (!activeFocus) rowRoot.commitEdit()
-          Keys.onEscapePressed: function(event) {
-            rowRoot.cancelEdit()
-            event.accepted = true
+          Keys.onPressed: function(event) {
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+              rowRoot.commitEdit()
+              event.accepted = true
+            } else if (event.key === Qt.Key_Escape) {
+              rowRoot.cancelEdit()
+              event.accepted = true
+            }
           }
         }
 
