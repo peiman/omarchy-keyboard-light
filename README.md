@@ -2,6 +2,8 @@
 
 An [Omarchy](https://omarchy.org) shell plugin that drives the keyboard backlight the way a Mac does.
 
+![Keyboard light panel](preview.png)
+
 - In a dark room the keys come on. In a bright room they go off. Between 8 and 180 lux the level falls in a straight line. Those two points are the defaults and can be changed.
 - After you stop typing the light fades out. The next key or touch brings it back. The default wait is 2 seconds. A video that keeps the screen awake does not keep the keys lit.
 - A full change eases over about 0.3 seconds. The Fade slider in the panel runs from 0.2 seconds to 1 second. A smaller change takes less of that time.
